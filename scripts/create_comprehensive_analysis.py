@@ -220,9 +220,12 @@ def process_csv_file(csv_path):
                     district = district.strip()
                 candidate = row.get('candidate', '').strip()
                 
-                # Skip non-candidate rows
-                if not candidate or candidate in ['Totals', 'Total', 'Write-In Votes', 'Write-in', 
-                                                   'Over Votes', 'Under Votes', 'Undervotes', 'Overvotes']:
+                # Skip non-candidate rows (case-insensitive check)
+                candidate_upper = candidate.upper()
+                skip_entries = ['TOTALS', 'TOTAL', 'WRITE-IN VOTES', 'WRITE-IN', 
+                               'OVER VOTES', 'UNDER VOTES', 'UNDERVOTES', 'OVERVOTES',
+                               'SCATTERING', 'WRITEIN VOTES', 'WRITE IN VOTES']
+                if not candidate or candidate_upper in skip_entries:
                     continue
                 
                 party = row.get('party', '').strip()
