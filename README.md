@@ -218,21 +218,21 @@ The map uses color-coded categories to represent the competitiveness and margin 
 
 | Category | Margin | Color | Description |
 |----------|--------|-------|-------------|
-| Annihilation Democratic | 40%+ Dem | #08306b | Deep blue - overwhelming Democratic stronghold |
-| Landslide Democratic | 30-40% Dem | #08519c | Dominant Democratic victory |
-| Blowout Democratic | 20-30% Dem | #2171b5 | Stronghold - reliably safe Democratic |
-| Strong Democratic | 15-20% Dem | #4292c6 | Safe Democratic seat |
-| Solid Democratic | 10-15% Dem | #6baed6 | Safe - comfortable Democratic advantage |
-| Lean Democratic | 5-10% Dem | #9ecae1 | Likely Democratic - clear but not overwhelming |
-| Tilt Democratic | 2-5% Dem | #c6dbef | Lean Democratic - modest advantage |
-| Tossup | 0-2% | #f0f0f0 | True battleground - too close to call |
-| Tilt Republican | 2-5% Rep | #fcbba1 | Lean Republican - modest advantage |
-| Lean Republican | 5-10% Rep | #fc9272 | Likely Republican - clear but not overwhelming |
-| Solid Republican | 10-15% Rep | #fb6a4a | Safe - comfortable Republican advantage |
-| Strong Republican | 15-20% Rep | #ef3b2c | Safe Republican seat |
-| Blowout Republican | 20-30% Rep | #cb181d | Stronghold - reliably safe Republican |
-| Landslide Republican | 30-40% Rep | #a50f15 | Dominant Republican victory |
-| Annihilation Republican | 40%+ Rep | #67000d | Deep red - overwhelming Republican stronghold |
+| **Democratic Annihilation** | D+40%+ | #08306b | Deep blue - overwhelming Democratic stronghold |
+| **Democratic Dominant** | D+30-40% | #08519c | Dominant Democratic victory |
+| **Democratic Stronghold** | D+20-30% | #3182bd | Reliably safe Democratic county |
+| **Democratic Safe** | D+10-20% | #6baed6 | Safe Democratic seat |
+| **Democratic Likely** | D+5.5-10% | #9ecae1 | Likely Democratic - clear advantage |
+| **Democratic Lean** | D+1-5.5% | #c6dbef | Lean Democratic - modest advantage |
+| **Democratic Tilt** | D+0.5-1% | #e1f5fe | Tilt Democratic - slight edge |
+| **Tossup** | ±0.5% | #f7f7f7 | True battleground - too close to call |
+| **Republican Tilt** | R+0.5-1% | #fee8c8 | Tilt Republican - slight edge |
+| **Republican Lean** | R+1-5.5% | #fcae91 | Lean Republican - modest advantage |
+| **Republican Likely** | R+5.5-10% | #fb6a4a | Likely Republican - clear advantage |
+| **Republican Safe** | R+10-20% | #ef3b2c | Safe Republican seat |
+| **Republican Stronghold** | R+20-30% | #cb181d | Reliably safe Republican county |
+| **Republican Dominant** | R+30-40% | #a50f15 | Dominant Republican victory |
+| **Republican Annihilation** | R+40%+ | #67000d | Deep red - overwhelming Republican stronghold |
 
 **Color Interpretation Tips:**
 - **Darker colors** = Larger margins = Safer for that party
