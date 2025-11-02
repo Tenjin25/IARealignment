@@ -429,6 +429,9 @@ for csv_file in csv_files:
                         "contest_name": contest_name,
                         "results": office_results
                     }
+                else:
+                    # Merge results from multiple files for the same contest
+                    results_by_year[year][contest_category][contest_key]["results"].update(office_results)
         
         print(f"  [OK] Processed {len(result['results'])} counties, {len(result['offices'])} offices")
     else:
