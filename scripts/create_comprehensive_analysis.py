@@ -176,9 +176,10 @@ def process_csv_file(csv_path):
             return "President"
         if "Senate" in office or "Senator" in office:
             return "U.S. Senate"
-        if "Auditor" in office:
+        # Only match state-level offices, not county offices
+        if "Auditor of State" in office or "State Auditor" in office:
             return "Auditor of State"
-        if "Treasurer" in office:
+        if "Treasurer of State" in office or "State Treasurer" in office:
             return "Treasurer of State"
         return office
     
@@ -364,6 +365,8 @@ for subdir in ["2012", "2018", "2020", "2022"]:
         # Get the consolidated county or precinct files
         csv_files.extend(glob.glob(os.path.join(subdir_path, "*__ia__general__county.csv")))
         csv_files.extend(glob.glob(os.path.join(subdir_path, "*__ia__general__precinct.csv")))
+        # Also get per-county precinct files (format: *__ia__general__[countyname]__precinct.csv)
+        csv_files.extend(glob.glob(os.path.join(subdir_path, "*__ia__general__*__precinct.csv")))
 
 # Sort files by date
 csv_files.sort()
