@@ -136,16 +136,17 @@ def process_csv_file(csv_path):
                 
                 party = row.get('party', '').strip()
                 
-                # Normalize party names
-                if 'Democratic' in party or party == 'DEM':
+                # Normalize party names (case-insensitive)
+                party_lower = party.lower()
+                if 'democrat' in party_lower or party == 'DEM':
                     party = 'DEM'
-                elif 'Republican' in party or party == 'REP':
+                elif 'republican' in party_lower or party == 'REP':
                     party = 'REP'
-                elif 'Libertarian' in party:
+                elif 'libertarian' in party_lower:
                     party = 'LIB'
-                elif 'Green' in party:
+                elif 'green' in party_lower:
                     party = 'GRN'
-                elif party and party not in ['', 'Nominated by Petition']:
+                elif party and party not in ['', 'Nominated by Petition', 'Nominated By Petition']:
                     party = 'OTH'
                 
                 # Handle both integer and floating-point vote values
