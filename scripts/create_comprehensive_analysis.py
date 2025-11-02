@@ -61,6 +61,96 @@ def categorize_margin(margin):
     
     return None
 
+def infer_party_from_candidate(candidate_name, year=None):
+    """Infer party affiliation from candidate name based on known candidates"""
+    candidate_lower = candidate_name.lower()
+    
+    # Presidential candidates (use full names to avoid false matches)
+    presidential_dems = [
+        'joseph r. biden', 'joe biden', 'biden',
+        'barack obama', 'obama',
+        'hillary clinton', 'bill clinton', 'clinton',
+        'al gore', 'gore',
+        'john kerry', 'kerry',
+        'michael dukakis', 'dukakis',
+        'walter mondale', 'mondale',
+        'jimmy carter', 'carter',
+        'kamala harris', 'kamala d. harris'
+    ]
+    presidential_reps = [
+        'donald trump', 'donald j. trump', 'trump',
+        'john mccain', 'mccain',
+        'mitt romney', 'romney',
+        'george bush', 'george w. bush', 'bush',
+        'bob dole', 'dole',
+        'ronald reagan', 'reagan',
+        'michael pence', 'michael r. pence', 'pence'
+    ]
+    
+    # Iowa-specific candidates (use more specific names)
+    iowa_dems = [
+        'chet culver', 'culver/judge',
+        'patty judge', 'judge/hart',
+        'tom harkin', 'harkin',
+        'bruce braley', 'braley',
+        'fred hubbell', 'hubbell',
+        'rita hart', 'rita r. hart',
+        'abby finkenauer', 'finkenauer',
+        'theresa greenfield', 'greenfield',
+        'michael franken', 'mike franken',
+        'michael a. mauro', 'michael mauro',
+        'roxanne conlin', 'conlin',
+        'deidre dejear', 'dejear',
+        # Statewide officials
+        'tom miller',  # Attorney General
+        'michael l. fitzgerald', 'michael fitzgerald',  # Treasurer
+        'francis thicke',  # Agriculture
+        'tim gannon',  # Agriculture
+        'rob sand',  # Auditor
+        'jonathan neiderbach', 'jon murphy'  # Auditor
+    ]
+    iowa_reps = [
+        'terry branstad', 'terry e. branstad', 'branstad/reynolds',
+        'kim reynolds', 'reynolds/gregg',
+        'chuck grassley', 'grassley',
+        'joni ernst', 'ernst',
+        'steve king', 'king (r-', # More specific for Rep Steve King
+        'mariannette miller-meeks', 'miller-meeks',
+        'ashley hinson', 'hinson',
+        'matt schultz', 'schultz',
+        'paul pate', 'paul d. pate', 'pate',
+        # Statewide officials
+        'brenna findley',  # Attorney General 2010
+        'adam gregg',  # Attorney General 2018 (also Lt. Governor)
+        'david a. vaudt', 'david vaudt',  # Auditor
+        'mary mosiman',  # Auditor
+        'bill northey',  # Agriculture
+        'mike naig',  # Agriculture
+        'david d. jamison', 'david jamison',  # Treasurer
+        'jeremy davis', 'jeremy n. davis',  # Treasurer
+        'sam clovis'  # Treasurer
+    ]
+    
+    # Check presidential candidates first (more specific matches)
+    for dem_name in presidential_dems:
+        if dem_name in candidate_lower:
+            return 'DEM'
+    
+    for rep_name in presidential_reps:
+        if rep_name in candidate_lower:
+            return 'REP'
+    
+    # Then check Iowa candidates
+    for dem_name in iowa_dems:
+        if dem_name in candidate_lower:
+            return 'DEM'
+    
+    for rep_name in iowa_reps:
+        if rep_name in candidate_lower:
+            return 'REP'
+    
+    return None
+
 def process_csv_file(csv_path):
     """Process a single CSV file and return aggregated county data"""
     # Define offices we're interested in - including variations
@@ -136,18 +226,25 @@ def process_csv_file(csv_path):
                 
                 party = row.get('party', '').strip()
                 
+                # If party is empty, try to infer from candidate name
+                if not party or party == '':
+                    # Extract year from filename
+                    year_match = os.path.basename(csv_path)[:4]
+                    party = infer_party_from_candidate(candidate, year_match)
+                
                 # Normalize party names (case-insensitive)
-                party_lower = party.lower()
-                if 'democrat' in party_lower or party == 'DEM':
-                    party = 'DEM'
-                elif 'republican' in party_lower or party == 'REP':
-                    party = 'REP'
-                elif 'libertarian' in party_lower:
-                    party = 'LIB'
-                elif 'green' in party_lower:
-                    party = 'GRN'
-                elif party and party not in ['', 'Nominated by Petition', 'Nominated By Petition']:
-                    party = 'OTH'
+                if party:
+                    party_lower = party.lower()
+                    if 'democrat' in party_lower or party == 'DEM' or party_lower == 'dem':
+                        party = 'DEM'
+                    elif 'republican' in party_lower or party == 'REP' or party_lower == 'rep':
+                        party = 'REP'
+                    elif 'libertarian' in party_lower:
+                        party = 'LIB'
+                    elif 'green' in party_lower:
+                        party = 'GRN'
+                    elif party not in ['', 'Nominated by Petition', 'Nominated By Petition']:
+                        party = 'OTH'
                 
                 # Handle both integer and floating-point vote values
                 try:
@@ -224,8 +321,8 @@ def process_csv_file(csv_path):
                 other_votes = race["total_votes"] - two_party_total
                 winner = "REP" if margin > 0 else ("DEM" if margin < 0 else "TIE")
                 
-                # Create contest key (county name)
-                contest_key = county
+                # Create contest key (county name + office to allow multiple offices per county)
+                contest_key = f"{county}_{race['office']}"
                 
                 if contest_key not in processed_counties:
                     processed_counties[contest_key] = {
@@ -316,7 +413,9 @@ for csv_file in csv_files:
             for county_key, county_data in result["results"].items():
                 if county_data["contest"] == office:
                     county_data["year"] = year
-                    office_results[county_key] = county_data
+                    # Use just the county name as the key in the final output
+                    county_name = county_data["county"]
+                    office_results[county_name] = county_data
             
             if office_results:
                 if contest_key not in results_by_year[year][contest_category]:
