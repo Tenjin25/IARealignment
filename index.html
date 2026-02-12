@@ -65,6 +65,39 @@
     .spinner svg circle {
       animation: spinner-rotate 0.8s linear infinite;
     }
+    .custom-label-toggle {
+      background: #000000;
+      border: none;
+      color: #fbbf24;
+      font-weight: 600;
+      font-size: 18px;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      margin-left: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .custom-label-toggle:hover {
+      background: #1f2937;
+      transform: scale(1.1);
+    }
+    .custom-label-toggle .label-icon {
+      font-size: 20px;
+    }
+    .custom-label-toggle .label-text {
+      display: none;
+    }
+    .contest-type-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
   </style>
   <script>
       // Try bbox via turf, then fallback to geometry-derived LngLatBounds (like NCMap)
@@ -868,7 +901,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="mode-toggle active" id="county-mode" onclick="setAnalysisMode('county')">County Results</div>
             </div>
             <div class="control-group">
-                <label class="contest-label">📊 Contest Type:</label>
+                <div class="contest-type-header">
+                  <label>📊 Contest Type:</label>
+                  <button id="toggleLabelsBtn" class="custom-label-toggle" title="Toggle county labels"><span class="label-icon" aria-hidden="true">🏷️</span> <span class="label-text">Hide County Labels</span></button>
+                </div>
                 <select id="contestSelect">
                     <option value="">Select a Contest...</option>
                 </select>
@@ -925,7 +961,26 @@ document.addEventListener('DOMContentLoaded', function() {
     let electionData = null;
     let currentContest = null;
     let currentView = 'counties'; // Default to county view for Tennessee map
+    let countyLabelsVisible = true;
 
+
+    function setCountyLabelVisibility(visible) {
+      countyLabelsVisible = visible;
+      const toggleBtn = document.getElementById('toggleLabelsBtn');
+      if (toggleBtn) {
+        const labelText = toggleBtn.querySelector('.label-text');
+        if (labelText) {
+          labelText.textContent = visible ? 'Hide County Labels' : 'Show County Labels';
+        }
+      }
+      if (map && map.getLayer && map.getLayer('county-label')) {
+        map.setLayoutProperty('county-label', 'visibility', visible ? 'visible' : 'none');
+      }
+    }
+
+    function toggleCountyLabels() {
+      setCountyLabelVisibility(!countyLabelsVisible);
+    }
 
     function setStatus(text, timeout = 4000) {
       const panel = document.getElementById('status-panel');
@@ -1986,6 +2041,11 @@ function toggleSidebar() {
             'text-halo-width': 2
           }
         });
+        // Setup label toggle button
+        const toggleBtn = document.getElementById('toggleLabelsBtn');
+        if (toggleBtn) {
+          toggleBtn.addEventListener('click', toggleCountyLabels);
+        }
         // Add mouseleave event handler
         map.on('mouseleave', 'county-fill', () => {
           map.getCanvas().style.cursor = '';
