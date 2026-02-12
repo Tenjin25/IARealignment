@@ -172,14 +172,21 @@ def process_csv_file(csv_path):
     
     # Normalize office names to standard format
     def normalize_office(office):
-        if "President" in office:
+        office_lower = office.lower()
+        if "president" in office_lower:
             return "President"
-        if "Senate" in office or "Senator" in office:
+        if (
+            "u.s. senate" in office_lower
+            or "us senate" in office_lower
+            or "u.s. senator" in office_lower
+            or "us senator" in office_lower
+            or "united states senate" in office_lower
+        ):
             return "U.S. Senate"
         # Only match state-level offices, not county offices
-        if "Auditor of State" in office or "State Auditor" in office:
+        if "auditor of state" in office_lower or "state auditor" in office_lower:
             return "Auditor of State"
-        if "Treasurer of State" in office or "State Treasurer" in office:
+        if "treasurer of state" in office_lower or "state treasurer" in office_lower:
             return "Treasurer of State"
         return office
     
